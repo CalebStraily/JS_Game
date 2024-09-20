@@ -4,10 +4,11 @@ let pikminSpawnableContainer = document.querySelector(".pikminSpawnable");
 let ctx = canvas.getContext('2d');
 
 let mouseX = 0, mouseY = 0; // Mouse position
-let objects = []; // Array to hold dynamic objects
-let staticObjects = []; // Array to hold static objects (persistent)
+let pikminObjects = []; // Array to hold dynamic pikminObjects
+let staticObjects = []; // Array to hold static pikminObjects (persistent)
+let spawnTokenObjects = [];
 let pikminRetrieved = [];
-let objectRadius = 20; // Radius of the objects
+let objectRadius = 20; // Radius of the pikminObjects
 let minDistanceFromMouse = 50;
 let spawnLimit = 10;
 
@@ -28,6 +29,16 @@ let spawnerObj =
 }
 
 staticObjects.push(spawnerObj);
+
+for (let i = 0; i < 5; i++) 
+{
+    let spawnTokenObj = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        color: "#00ffff"
+    };
+    spawnTokenObjects.push(spawnTokenObj);
+}
 
 window.onload = function()
 {
@@ -60,17 +71,17 @@ canvas.addEventListener('click', (e) =>
 
             if (spawnLimit > 0)
             {
-                // Create dynamic objects that follow the mouse
+                // Create dynamic pikminObjects that follow the mouse
                 let pikminObj = 
                 {
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     color: "#ff0000",
-                    isFollowing: false, // Initially, objects are not following the mouse
+                    isFollowing: false, // Initially, pikminObjects are not following the mouse
                     offset: getRandomOffset()
                 };
 
-                objects.push(pikminObj);
+                pikminObjects.push(pikminObj);
                 spawnLimit--;
 
                 pikminSpawnableContainer.innerHTML = `<h1>Pikmin Spawnable: ${spawnLimit}</h1>`;
@@ -78,7 +89,7 @@ canvas.addEventListener('click', (e) =>
         }
     });
 
-    objects.forEach((pikminObj) => 
+    pikminObjects.forEach((pikminObj) => 
     {
         let dist = Math.hypot(pikminObj.x - clickX, pikminObj.y - clickY);
         if (dist <= objectRadius) 
@@ -95,10 +106,10 @@ canvas.addEventListener('click', (e) =>
     });
 });
 
-// Update position of following objects
+// Update position of following pikminObjects
 function updateObjectPositions() 
 {
-    objects.forEach((pikminObj) => 
+    pikminObjects.forEach((pikminObj) => 
     {
         if (pikminObj.isFollowing) 
         {
@@ -116,11 +127,28 @@ function updateObjectPositions()
     });
 }
 
-// Function to draw dynamic objects
+function drawSpawnTokens()
+{
+    // Instead of clearing the entire canvas, just redraw the moving pikminObjects
+    spawnTokenObjects.forEach(spawnTokenObj => 
+    {
+        ctx.beginPath();
+        ctx.arc(spawnTokenObj.x, spawnTokenObj.y, objectRadius, 0, Math.PI * 2);
+        ctx.fillStyle = spawnTokenObj.color;
+        ctx.fill();
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+        ctx.closePath();
+    });
+}
+
+// Function to draw dynamic pikminObjects
 function drawPikmin() 
 {
-    // Instead of clearing the entire canvas, just redraw the moving objects
-    objects.forEach(pikminObj => 
+    // Instead of clearing the entire canvas, just redraw the moving pikminObjects
+    pikminObjects.forEach(pikminObj => 
     {
         ctx.beginPath();
         ctx.arc(pikminObj.x, pikminObj.y, objectRadius, 0, Math.PI * 2);
@@ -133,8 +161,7 @@ function drawPikmin()
         ctx.closePath();
     });
 }
-
-// Add static objects (These don't need to be updated every frame)
+// Add static pikminObjects (These don't need to be updated every frame)
 function drawStaticObjects() 
 {
     // Example: Draw a spawner or any other object
@@ -142,7 +169,7 @@ function drawStaticObjects()
     ctx.fillRect(spawnerObj.x, spawnerObj.y, spawnerObj.width, spawnerObj.height);
 }
 
-// Draw static objects initially (they stay persistent)
+// Draw static pikminObjects initially (they stay persistent)
 drawStaticObjects();
 
 
@@ -150,10 +177,11 @@ drawStaticObjects();
 // Main loop for animation
 function animate() 
 {
-    updateObjectPositions(); // Update positions of dynamic objects
+    updateObjectPositions(); // Update positions of dynamic pikminObjects
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear only the dynamic layer
-    drawStaticObjects(); // Redraw static objects to maintain them
-    drawPikmin(); // Draw dynamic objects
+    drawStaticObjects(); // Redraw static pikminObjects to maintain them
+    drawPikmin(); // Draw dynamic pikminObjects
+    drawSpawnTokens();
     requestAnimationFrame(animate); // Loop the animation
 }
 
