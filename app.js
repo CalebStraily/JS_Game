@@ -8,6 +8,7 @@ let pikminObjects = []; // Array to hold dynamic pikminObjects
 let staticObjects = []; // Array to hold static pikminObjects (persistent)
 let spawnTokenObjects = [];
 let pikminRetrieved = [];
+let enemyObjects = [];
 let objectRadius = 20; // Radius of the pikminObjects
 let minDistanceFromMouse = 50;
 let spawnLimit = 1;
@@ -34,6 +35,17 @@ let spawnerObj =
 }
 
 staticObjects.push(spawnerObj);
+
+let enemyObj = 
+{
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    color: '#800080',
+    width: 50,
+    height: 50
+}
+
+enemyObjects.push(enemyObj);
 
 for (let i = 0; i < 9; i++) 
 {
@@ -84,8 +96,8 @@ canvas.addEventListener('click', (e) =>
                 // Create dynamic pikminObjects that follow the mouse
                 let pikminObj = 
                 {
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
+                    x: spawnerObj.x - 20,
+                    y: spawnerObj.y - 20,
                     color: "#ff0000",
                     isFollowing: false,
                     isAtOffset: false,
@@ -127,110 +139,115 @@ canvas.addEventListener('click', (e) =>
         {
             console.log("Spawn Token Clicked!");
 
-            if (!retrieveAnimationRunning)
+            if (!tokenObj.isErased)
             {
-                for (let i = 0; i < pikminRetrieved.length; i++)
+                if (!retrieveAnimationRunning)
                 {
-                    if (pikminRetrieved[i].isFollowing)
+                    for (let i = 0; i < pikminRetrieved.length; i++)
                     {
-                        tokenObj.isBeingRetrieved = true;
-                        tokenObj.isClicked = true;
-
-                        pikminRetrieved[i].isFollowing = false;
-                        pikminRetrieved[i].isRetrieving = true;
-
-                        redPikminCount--;
-                        primaryPikmin = pikminRetrieved[i];
-                        tokenRetrieveAnimation();
-                        return;
+                        if (pikminRetrieved[i].isFollowing)
+                        {
+                            tokenObj.isBeingRetrieved = true;
+                            tokenObj.isClicked = true;
+                        
+                            pikminRetrieved[i].isFollowing = false;
+                            pikminRetrieved[i].isRetrieving = true;
+                        
+                            redPikminCount--;
+                            primaryPikmin = pikminRetrieved[i];
+                            tokenRetrieveAnimation();
+                            return;
+                        }
                     }
                 }
-            }
-            else if (retrieveAnimationRunning && !secondaryRetrieveAnimationRunning)
-            {
-                for (let i = 0; i < pikminRetrieved.length; i++)
+                else if (retrieveAnimationRunning && !secondaryRetrieveAnimationRunning)
                 {
-                    if (pikminRetrieved[i].isFollowing)
+                    for (let i = 0; i < pikminRetrieved.length; i++)
                     {
-                        tokenObj.isBeingRetrieved = true;
-                        tokenObj.isClicked = true;
-
-                        pikminRetrieved[i].isFollowing = false;
-                        pikminRetrieved[i].isRetrieving = true;
-
-                        redPikminCount--;
-                        secondaryPikmin = pikminRetrieved[i];
-                        secondaryRetrieveAnimation();
-                        return;
+                        if (pikminRetrieved[i].isFollowing)
+                        {
+                            tokenObj.isBeingRetrieved = true;
+                            tokenObj.isClicked = true;
+                        
+                            pikminRetrieved[i].isFollowing = false;
+                            pikminRetrieved[i].isRetrieving = true;
+                        
+                            redPikminCount--;
+                            secondaryPikmin = pikminRetrieved[i];
+                            secondaryRetrieveAnimation();
+                            return;
+                        }
                     }
-                }
-            }  
-            
-            function tokenRetrieveAnimation()
-            {
-                let tokenOffsetX = tokenObj.x + primaryPikmin.firstOffset;
-                let tokenOffsetY = tokenObj.y;
-                
-                retrieveAnimationRunning = true;
-
-                moveToToken(primaryPikmin, tokenOffsetX, tokenOffsetY);
-
-                // Check if object2 has reached the offset position
-                if (primaryPikmin.x === tokenOffsetX && primaryPikmin.y === tokenOffsetY) 
-                {
-                    primaryPikmin.isAtOffset = true;
-                    tokenObj.isFollowing = true;
-                }
-
-                if (tokenObj.isErased == true)
-                {
-                    console.log("FIRST ANIMATION CANCELLED");
-                    spawnLimit++;
-                    primaryPikmin.isRetrieving = false;
-                    tokenObj.isBeingRetrieved = false;
-                    retrieveAnimationRunning = false;
-                    cancelAnimationFrame(tokenRetrieveAnimation);
-                    return;
-                }
-
-                requestAnimationFrame(tokenRetrieveAnimation);
-            }
-
-            function secondaryRetrieveAnimation()
-            {
-                let tokenOffsetX = tokenObj.x + secondaryPikmin.firstOffset;
-                let tokenOffsetY = tokenObj.y;
-
-                secondaryRetrieveAnimationRunning = true;
-
-                moveToSecondaryToken(secondaryPikmin, tokenOffsetX, tokenOffsetY);
-
-                // Check if object2 has reached the offset position
-                if (secondaryPikmin.x === tokenOffsetX && secondaryPikmin.y === tokenOffsetY) 
-                {
-                    secondaryPikmin.isAtOffset = true;
-                    tokenObj.isFollowing = true;
-                }
-
-                if (tokenObj.isErased == true)
-                {
-                    console.log("SECOND ANIMATION CANCELLED");
-                    spawnLimit++;
-                    secondaryPikmin.isRetrieving = false;
-                    tokenObj.isBeingRetrieved = false;
-                    secondaryRetrieveAnimationRunning = false;
+                }  
                     
-                    cancelAnimationFrame(secondaryRetrieveAnimation);
-                    return;
+                function tokenRetrieveAnimation()
+                {
+                    let tokenOffsetX = tokenObj.x + primaryPikmin.firstOffset;
+                    let tokenOffsetY = tokenObj.y;
+                    
+                    retrieveAnimationRunning = true;
+                
+                    moveToToken(primaryPikmin, tokenOffsetX, tokenOffsetY);
+                
+                    // Check if object2 has reached the offset position
+                    if (primaryPikmin.x === tokenOffsetX && primaryPikmin.y === tokenOffsetY) 
+                    {
+                        primaryPikmin.isAtOffset = true;
+                        tokenObj.isFollowing = true;
+                    }
+                
+                    console.log(tokenObj.isErased);
+                
+                    if (tokenObj.isErased == true)
+                    {
+                        console.log("FIRST ANIMATION CANCELLED");
+                        spawnLimit++;
+                        primaryPikmin.isRetrieving = false;
+                        tokenObj.isBeingRetrieved = false;
+                        retrieveAnimationRunning = false;
+                        cancelAnimationFrame(tokenRetrieveAnimation);
+                        return;
+                    }
+                
+                    requestAnimationFrame(tokenRetrieveAnimation);
                 }
-
-                requestAnimationFrame(secondaryRetrieveAnimation);
+            
+                function secondaryRetrieveAnimation()
+                {
+                    let tokenOffsetX = tokenObj.x + secondaryPikmin.firstOffset;
+                    let tokenOffsetY = tokenObj.y;
+                
+                    secondaryRetrieveAnimationRunning = true;
+                
+                    moveToSecondaryToken(secondaryPikmin, tokenOffsetX, tokenOffsetY);
+                
+                    // Check if object2 has reached the offset position
+                    if (secondaryPikmin.x === tokenOffsetX && secondaryPikmin.y === tokenOffsetY) 
+                    {
+                        secondaryPikmin.isAtOffset = true;
+                        tokenObj.isFollowing = true;
+                    }
+                
+                    console.log(tokenObj.isErased);
+                
+                    if (tokenObj.isErased == true)
+                    {
+                        console.log("SECOND ANIMATION CANCELLED");
+                        spawnLimit++;
+                        secondaryPikmin.isRetrieving = false;
+                        tokenObj.isBeingRetrieved = false;
+                        secondaryRetrieveAnimationRunning = false;
+                        
+                        cancelAnimationFrame(secondaryRetrieveAnimation);
+                        return;
+                    }
+                
+                    requestAnimationFrame(secondaryRetrieveAnimation);
+                }
             }
         }
     })
 });
-
-
 
 function moveToToken(obj, targetX, targetY, speed = 0.5) 
 {
@@ -362,6 +379,24 @@ function drawPikmin()
         ctx.closePath();
     });
 }
+
+function drawEnemy()
+{
+    // Example: Draw a spawner or any other object
+    ctx.fillStyle = enemyObj.color;
+    ctx.fillRect(enemyObj.x, enemyObj.y, enemyObj.width, enemyObj.height);
+
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    let centerX = enemyObj.x + enemyObj.width / 2;
+    let centerY = enemyObj.y + enemyObj.height / 2;
+
+    ctx.fillText("10", centerX, centerY);
+}
+
 // Add static pikminObjects (These don't need to be updated every frame)
 function drawStaticObjects() 
 {
@@ -383,7 +418,7 @@ function animate()
     drawStaticObjects(); // Redraw static pikminObjects to maintain them
     drawPikmin(); // Draw dynamic pikminObjects
     drawSpawnTokens();
-
+    drawEnemy();
     requestAnimationFrame(animate); // Loop the animation
 }
 
