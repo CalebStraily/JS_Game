@@ -9,6 +9,7 @@ let staticObjects = []; // Array to hold static pikminObjects (persistent)
 let spawnTokenObjects = [];
 let pikminRetrieved = [];
 let enemyObjects = [];
+let shipPartObjects = [];
 let objectRadius = 20; // Radius of the pikminObjects
 let minDistanceFromMouse = 50;
 let spawnLimit = 1;
@@ -21,6 +22,8 @@ let retrieveAnimationRunning = false;
 let secondaryRetrieveAnimationRunning = false;
 let primaryPikmin;
 let secondaryPikmin;
+let pikminAttacking = 0;
+let borderMargin = 100;
 
 canvas.height = window.innerHeight - 10;
 canvas.width = window.innerWidth;
@@ -38,21 +41,41 @@ staticObjects.push(spawnerObj);
 
 let enemyObj = 
 {
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
     color: '#800080',
     width: 50,
-    height: 50
+    height: 50,
+    x: Math.random() * (canvas.width - 50 - 2 * borderMargin) + borderMargin,
+    y: Math.random() * (canvas.height - 50 - 2 * borderMargin) + borderMargin,
+    enemyHealth: 10,
+    pikminAttacking: 0,
+    spawnLimitIncreased: false,
+    isFollowing: false,
+    isErased: false
 }
 
 enemyObjects.push(enemyObj);
+
+let shipPartObj =
+{
+    x: Math.random() * (canvas.width - 50 - 2 * borderMargin) + borderMargin,
+    y: Math.random() * (canvas.height - 50 - 2 * borderMargin) + borderMargin,
+    color: '#fab906',
+    width: 50,
+    height: 50,
+    pikminStrengthRequired: 20,
+    pikminAssigned: 0,
+    isFollowing: false,
+    isErased: false
+}
+
+shipPartObjects.push(shipPartObj);
 
 for (let i = 0; i < 9; i++) 
 {
     let spawnTokenObj = 
     {
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * (canvas.width - 50 - 2 * borderMargin) + borderMargin,
+        y: Math.random() * (canvas.height - 50 - 2 * borderMargin) + borderMargin,
         color: "#00ffff",
         isFollowing: false,
         isErased: false,
@@ -102,8 +125,12 @@ canvas.addEventListener('click', (e) =>
                     isFollowing: false,
                     isAtOffset: false,
                     isRetrieving: false,
+                    isTrackingTarget: false,
+                    isOwnedByPlayer: false,
                     firstOffset: 50,
                     secondOffset: -50,
+                    distance: 100,
+                    angle: 0,
                     offset: getRandomOffset()
                 };
 
@@ -124,8 +151,14 @@ canvas.addEventListener('click', (e) =>
             if (!pikminObj.isFollowing && !pikminObj.isRetrieving) 
             {
                 pikminObj.isFollowing = true;
-                pikminRetrieved.push(pikminObj);
-                redPikminCount++;
+                
+                if (pikminObj.isOwnedByPlayer == false)
+                {
+                    pikminObj.isOwnedByPlayer = true;
+                    redPikminCount++;
+                    pikminRetrieved.push(pikminObj);
+                }
+                
                 redPikminContainer.innerHTML = `<h1>Red Pikmin: ${redPikminCount}</h1>`;
             }
         }
@@ -152,8 +185,7 @@ canvas.addEventListener('click', (e) =>
                         
                             pikminRetrieved[i].isFollowing = false;
                             pikminRetrieved[i].isRetrieving = true;
-                        
-                            redPikminCount--;
+
                             primaryPikmin = pikminRetrieved[i];
                             tokenRetrieveAnimation();
                             return;
@@ -171,8 +203,7 @@ canvas.addEventListener('click', (e) =>
                         
                             pikminRetrieved[i].isFollowing = false;
                             pikminRetrieved[i].isRetrieving = true;
-                        
-                            redPikminCount--;
+
                             secondaryPikmin = pikminRetrieved[i];
                             secondaryRetrieveAnimation();
                             return;
@@ -187,7 +218,7 @@ canvas.addEventListener('click', (e) =>
                     
                     retrieveAnimationRunning = true;
                 
-                    moveToToken(primaryPikmin, tokenOffsetX, tokenOffsetY);
+                    moveToObject(primaryPikmin, tokenOffsetX, tokenOffsetY);
                 
                     // Check if object2 has reached the offset position
                     if (primaryPikmin.x === tokenOffsetX && primaryPikmin.y === tokenOffsetY) 
@@ -195,9 +226,7 @@ canvas.addEventListener('click', (e) =>
                         primaryPikmin.isAtOffset = true;
                         tokenObj.isFollowing = true;
                     }
-                
-                    console.log(tokenObj.isErased);
-                
+
                     if (tokenObj.isErased == true)
                     {
                         console.log("FIRST ANIMATION CANCELLED");
@@ -227,9 +256,7 @@ canvas.addEventListener('click', (e) =>
                         secondaryPikmin.isAtOffset = true;
                         tokenObj.isFollowing = true;
                     }
-                
-                    console.log(tokenObj.isErased);
-                
+
                     if (tokenObj.isErased == true)
                     {
                         console.log("SECOND ANIMATION CANCELLED");
@@ -246,10 +273,204 @@ canvas.addEventListener('click', (e) =>
                 }
             }
         }
-    })
+    });
+
+    enemyObjects.forEach((enemy) =>
+    {
+        if (mouseX >= enemy.x &&
+            mouseX <= enemy.x + enemy.width &&
+            mouseY >= enemy.y &&
+            mouseY <= enemy.y + enemy.height &&
+            pikminRetrieved.length != 0)
+        {
+            console.log("Enemy Clicked!");
+
+            if (!enemy.isErased)
+            {
+                for (let i = 0; i < pikminRetrieved.length; i++)
+                {
+                    if (pikminRetrieved[i].isFollowing)
+                    {
+                        pikminRetrieved[i].isTrackingTarget = true;
+                        pikminRetrieved[i].isFollowing = false;
+                        enemy.pikminAttacking++;
+    
+                        let temp = 0;
+    
+                        for (let i = 0; i < pikminRetrieved.length; i++)
+                        {
+                            if (pikminRetrieved[i].isTrackingTarget == true)
+                            {
+                                temp++;
+                            }   
+                        }
+    
+                        pikminAttacking = temp;
+                        
+                        attackEnemyAnimation();
+    
+                        if (pikminAttacking == enemy.enemyHealth)
+                        {
+    
+                            let healthLossInterval = setInterval(() =>
+                            {   
+                                enemy.enemyHealth--;
+    
+                                if (enemy.enemyHealth == 0)
+                                {
+                                    clearInterval(healthLossInterval);
+                                }
+    
+                            }, 1000);
+                        }
+    
+                        function attackEnemyAnimation()
+                        {
+                            if (pikminRetrieved[i].x === enemy.x && pikminRetrieved[i].y === enemy.y)
+                            {
+                                if (enemy.enemyHealth > 0)
+                                {
+                                    orbitObject();
+                                }
+                                else if (enemy.enemyHealth == 0)
+                                {
+                                    enemy.isFollowing = true;
+
+                                    return;
+                                }
+                                
+                                return;
+                            }
+                            else if (pikminRetrieved[i].x != enemy.x && pikminRetrieved[i].y != enemy.y && pikminRetrieved[i].isTrackingTarget == true)
+                            {
+                                moveToObject(pikminRetrieved[i], enemy.x, enemy.y);
+                            }
+    
+                            requestAnimationFrame(attackEnemyAnimation);
+                        }
+    
+                        function orbitObject()
+                        {
+                            pikminObjects.forEach(pikmin => 
+                            {
+                                if (pikmin.isTrackingTarget)
+                                {
+                                    pikmin.angle += 0.02;
+                                    pikmin.x = enemy.x + Math.cos(pikmin.angle) * pikmin.distance;
+                                    pikmin.y = enemy.y + Math.cos(pikmin.angle) * pikmin.distance;
+                                }
+                            })
+    
+                            if (enemy.enemyHealth == 0)
+                            {
+                                cancelAnimationFrame(orbitObject);
+    
+                                for (let i = 0; i < pikminRetrieved.length; i++)
+                                {
+                                    pikminRetrieved[i].isTrackingTarget = false;
+                                }
+                            }
+                            else if (enemy.enemyHealth > 0)
+                            {
+                                requestAnimationFrame(orbitObject);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    shipPartObjects.forEach((part) =>
+    {
+        if (mouseX >= part.x &&
+            mouseX <= part.x + part.width &&
+            mouseY >= part.y &&
+            mouseY <= part.y + part.height &&
+            pikminRetrieved.length != 0)
+        {
+            console.log("Ship Part Clicked!");
+
+            if (!part.isErased)
+            {
+                for (let i = 0; i < pikminRetrieved.length; i++)
+                {
+                    if (pikminRetrieved[i].isFollowing)
+                    {
+                        pikminRetrieved[i].isTrackingTarget = true;
+                        pikminRetrieved[i].isFollowing = false;
+
+                        let temp = 0;
+    
+                        for (let i = 0; i < pikminRetrieved.length; i++)
+                        {
+                            if (pikminRetrieved[i].isTrackingTarget == true)
+                            {
+                                temp++;
+                            }   
+                        }
+    
+                        part.pikminAssigned = temp;
+                        
+                        retrieveShipPartAnimation();
+    
+                        function retrieveShipPartAnimation()
+                        {
+                            if (pikminRetrieved[i].x === part.x && pikminRetrieved[i].y === part.y)
+                            {
+                                orbitObject();
+
+                                if(part.pikminAssigned == part.pikminStrengthRequired)
+                                {
+                                    part.isFollowing = true;
+                                }
+                                
+                                return;
+                            }
+                            else if (pikminRetrieved[i].x != part.x && pikminRetrieved[i].y != part.y && pikminRetrieved[i].isTrackingTarget == true)
+                            {
+                                moveToObject(pikminRetrieved[i], part.x, part.y);
+                            }
+    
+                            requestAnimationFrame(retrieveShipPartAnimation);
+                        }
+    
+                        function orbitObject()
+                        {
+                            pikminObjects.forEach(pikmin => 
+                            {
+                                if (pikmin.isTrackingTarget)
+                                {
+                                    pikmin.angle += 0.02;
+                                    pikmin.x = part.x + Math.cos(pikmin.angle) * pikmin.distance;
+                                    pikmin.y = part.y + Math.cos(pikmin.angle) * pikmin.distance;
+                                }
+                            })
+    
+                            if (part.isErased)
+                            {
+                                cancelAnimationFrame(orbitObject);
+    
+                                for (let i = 0; i < pikminRetrieved.length; i++)
+                                {
+                                    pikminRetrieved[i].isTrackingTarget = false;
+                                }
+                            }
+                            else if (!part.isErased)
+                            {
+                                requestAnimationFrame(orbitObject);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
 });
 
-function moveToToken(obj, targetX, targetY, speed = 0.5) 
+
+
+function moveToObject(obj, targetX, targetY, speed = 0.5) 
 {
     let dx = targetX - obj.x;
     let dy = targetY - obj.y;
@@ -286,7 +507,7 @@ function moveToSecondaryToken(obj, targetX, targetY, speed = 0.5)
 }
 
 // Update position of following pikminObjects
-function updateObjectPositions() 
+function updateObjectPositions()
 {
     pikminObjects.forEach((pikminObj) => 
     {
@@ -306,28 +527,85 @@ function updateObjectPositions()
     });
 }
 
+function updateEnemyPositions()
+{
+    enemyObjects.forEach((enemyObj) =>
+    {
+        if (enemyObj.isFollowing)
+        {
+            let dx = spawnerObj.x - enemyObj.x;
+            let dy = spawnerObj.y - enemyObj.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+    
+            if (distance < 10) 
+            {
+                enemyObj.isFollowing = false;
+                ctx.clearRect(enemyObj.x - objectRadius, enemyObj.y - objectRadius, objectRadius * 2, objectRadius * 2);
+                enemyObj.isErased = true;
+                
+                if (enemyObj.spawnLimitIncreased == false)
+                {
+                    spawnLimit += 10;
+                    enemyObj.spawnLimitIncreased = true;
+                }
+
+                return;
+            }
+        
+            let speed = 0.5;
+            enemyObj.x += (dx / distance) * speed;
+            enemyObj.y += (dy / distance) * speed;
+        }
+    });
+}
+
+function updatePartPositions()
+{
+    shipPartObjects.forEach((part) =>
+    {
+        if (part.isFollowing)
+        {
+            let dx = spawnerObj.x - part.x;
+            let dy = spawnerObj.y - part.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+        
+            if (distance < 10) 
+            {
+                part.isFollowing = false;
+                ctx.clearRect(part.x - objectRadius, part.y - objectRadius, objectRadius * 2, objectRadius * 2);
+                part.isErased = true;
+                return;
+            }
+        
+            let speed = 0.5;
+            part.x += (dx / distance) * speed;
+            part.y += (dy / distance) * speed;
+        }
+    });
+}
+
 function updateTokenPositions()
 {
     spawnTokenObjects.forEach((tokenObj) => 
+    {
+        if (tokenObj.isFollowing) 
         {
-            if (tokenObj.isFollowing) 
+            let dx = spawnerObj.x - tokenObj.x;
+            let dy = spawnerObj.y - tokenObj.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+        
+            if (distance < 10) 
             {
-                let dx = spawnerObj.x - tokenObj.x;
-                let dy = spawnerObj.y - tokenObj.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-    
-                if (distance < 10) 
-                {
-                    tokenObj.isFollowing = false;
-                    ctx.clearRect(tokenObj.x - objectRadius, tokenObj.y - objectRadius, objectRadius * 2, objectRadius * 2);
-                    tokenObj.isErased = true;
-                }
-
-                let speed = 0.5;
-                tokenObj.x += (dx / distance) * speed;
-                tokenObj.y += (dy / distance) * speed;
+                tokenObj.isFollowing = false;
+                ctx.clearRect(tokenObj.x - objectRadius, tokenObj.y - objectRadius, objectRadius * 2, objectRadius * 2);
+                tokenObj.isErased = true;
             }
-        });
+        
+            let speed = 0.5;
+            tokenObj.x += (dx / distance) * speed;
+            tokenObj.y += (dy / distance) * speed;
+        }
+    });
 }
 
 function updateSpawnAvailable()
@@ -382,19 +660,42 @@ function drawPikmin()
 
 function drawEnemy()
 {
-    // Example: Draw a spawner or any other object
-    ctx.fillStyle = enemyObj.color;
-    ctx.fillRect(enemyObj.x, enemyObj.y, enemyObj.width, enemyObj.height);
+    if (enemyObj.isErased == false)
+    {
+        // Example: Draw a spawner or any other object
+        ctx.fillStyle = enemyObj.color;
+        ctx.fillRect(enemyObj.x, enemyObj.y, enemyObj.width, enemyObj.height);
 
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-    let centerX = enemyObj.x + enemyObj.width / 2;
-    let centerY = enemyObj.y + enemyObj.height / 2;
+        let centerX = enemyObj.x + enemyObj.width / 2;
+        let centerY = enemyObj.y + enemyObj.height / 2;
 
-    ctx.fillText("10", centerX, centerY);
+        ctx.fillText(enemyObj.enemyHealth, centerX, centerY);
+    }
+}
+
+function drawShipPart()
+{
+    if (shipPartObj.isErased == false)
+    {
+        // Example: Draw a spawner or any other object
+        ctx.fillStyle = shipPartObj.color;
+        ctx.fillRect(shipPartObj.x, shipPartObj.y, shipPartObj.width, shipPartObj.height);
+    
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+    
+        let centerX = shipPartObj.x + shipPartObj.width / 2;
+        let centerY = shipPartObj.y + shipPartObj.height / 2;
+    
+        ctx.fillText(shipPartObj.pikminStrengthRequired, centerX, centerY);
+    }
 }
 
 // Add static pikminObjects (These don't need to be updated every frame)
@@ -413,12 +714,15 @@ function animate()
 {
     updateObjectPositions(); // Update positions of dynamic pikminObjects
     updateTokenPositions();
+    updateEnemyPositions();
     updateSpawnAvailable();
+    updatePartPositions();
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear only the dynamic layer
     drawStaticObjects(); // Redraw static pikminObjects to maintain them
     drawPikmin(); // Draw dynamic pikminObjects
     drawSpawnTokens();
     drawEnemy();
+    drawShipPart();
     requestAnimationFrame(animate); // Loop the animation
 }
 
