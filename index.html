@@ -13,6 +13,20 @@
 </head>
 <body>
 
+    <div class="modal fade" id="levelCompleteModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title">Level Complete!</h3>
+                </div>
+                <div class="modal-body">
+                  <h4>Thank you for playing my game!</h4>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container pikmin-container">
         <div class="row">
             <div class="col-4 redPikmin"><h1>Red Pikmin: </h1></div>
@@ -22,6 +36,7 @@
     </div>
 
     <canvas id="canvas" width="600" height="400"></canvas>
+    <audio src="./media/Pikmin - The Forest of Hope.mp3" autoplay loop muted></audio>
 
 </body>
 <script type="text/javascript" src="app.js"></script>

@@ -10,3 +10,34 @@ canvas
     display: block;
     border: 1px solid black;
 }
+
+.modal
+{
+    background-color: rgba(0, 0, 0, 0.377);
+    padding-top: 200px;
+}
+
+.modal-content
+{
+    background-color: black !important;
+}
+
+.modal-title
+{
+    color: #ffffff;
+}
+
+.modal-body
+{
+    color: rgb(255, 255, 255);
+}
+
+.modal-footer
+{
+    color: white;
+}
+
+.modal-backdrop-custom
+{
+    display: none !important;
+}

@@ -1,4 +1,5 @@
 let canvas = document.getElementById('canvas');
+let levelCompleteModal = new bootstrap.Modal(document.getElementById('levelCompleteModal'));
 let redPikminContainer = document.querySelector(".redPikmin");
 let pikminSpawnableContainer = document.querySelector(".pikminSpawnable");
 let ctx = canvas.getContext('2d');
@@ -127,6 +128,7 @@ canvas.addEventListener('click', (e) =>
                     isRetrieving: false,
                     isTrackingTarget: false,
                     isOwnedByPlayer: false,
+                    isClickedByPlayer: false,
                     firstOffset: 50,
                     secondOffset: -50,
                     distance: 100,
@@ -148,10 +150,12 @@ canvas.addEventListener('click', (e) =>
         if (dist <= objectRadius) 
         {
             console.log("Pikmin Clicked!");
+
             if (!pikminObj.isFollowing && !pikminObj.isRetrieving) 
             {
                 pikminObj.isFollowing = true;
-                
+                pikminObj.isClickedByPlayer = true;
+
                 if (pikminObj.isOwnedByPlayer == false)
                 {
                     pikminObj.isOwnedByPlayer = true;
@@ -307,22 +311,9 @@ canvas.addEventListener('click', (e) =>
     
                         pikminAttacking = temp;
                         
+                        pikminRetrieved[i].isClickedByPlayer = false;
+
                         attackEnemyAnimation();
-    
-                        if (pikminAttacking == enemy.enemyHealth)
-                        {
-    
-                            let healthLossInterval = setInterval(() =>
-                            {   
-                                enemy.enemyHealth--;
-    
-                                if (enemy.enemyHealth == 0)
-                                {
-                                    clearInterval(healthLossInterval);
-                                }
-    
-                            }, 1000);
-                        }
     
                         function attackEnemyAnimation()
                         {
@@ -331,6 +322,21 @@ canvas.addEventListener('click', (e) =>
                                 if (enemy.enemyHealth > 0)
                                 {
                                     orbitObject();
+
+                                    if (pikminAttacking >= enemy.enemyHealth)
+                                    {
+                
+                                        let healthLossInterval = setInterval(() =>
+                                        {   
+                                            enemy.enemyHealth--;
+                
+                                            if (enemy.enemyHealth == 0)
+                                            {
+                                                clearInterval(healthLossInterval);
+                                            }
+                
+                                        }, 1000);
+                                    }
                                 }
                                 else if (enemy.enemyHealth == 0)
                                 {
@@ -341,7 +347,7 @@ canvas.addEventListener('click', (e) =>
                                 
                                 return;
                             }
-                            else if (pikminRetrieved[i].x != enemy.x && pikminRetrieved[i].y != enemy.y && pikminRetrieved[i].isTrackingTarget == true)
+                            else if (pikminRetrieved[i].x != enemy.x && pikminRetrieved[i].y != enemy.y && pikminRetrieved[i].isTrackingTarget == true && pikminRetrieved[i].isClickedByPlayer == false)
                             {
                                 moveToObject(pikminRetrieved[i], enemy.x, enemy.y);
                             }
@@ -361,7 +367,7 @@ canvas.addEventListener('click', (e) =>
                                 }
                             })
     
-                            if (enemy.enemyHealth == 0)
+                            if (enemy.enemyHealth == 0 || pikminRetrieved[i].isClickedByPlayer == true)
                             {
                                 cancelAnimationFrame(orbitObject);
     
@@ -369,8 +375,10 @@ canvas.addEventListener('click', (e) =>
                                 {
                                     pikminRetrieved[i].isTrackingTarget = false;
                                 }
+
+                                enemy.pikminAttacking = 0;
                             }
-                            else if (enemy.enemyHealth > 0)
+                            else if (enemy.enemyHealth > 0 && pikminRetrieved[i].isClickedByPlayer == false)
                             {
                                 requestAnimationFrame(orbitObject);
                             }
@@ -412,22 +420,24 @@ canvas.addEventListener('click', (e) =>
     
                         part.pikminAssigned = temp;
                         
+                        pikminRetrieved[i].isClickedByPlayer = false;
+
                         retrieveShipPartAnimation();
     
                         function retrieveShipPartAnimation()
                         {
                             if (pikminRetrieved[i].x === part.x && pikminRetrieved[i].y === part.y)
                             {
-                                orbitObject();
+                                orbitShipPart();
 
-                                if(part.pikminAssigned == part.pikminStrengthRequired)
+                                if(part.pikminAssigned >= part.pikminStrengthRequired)
                                 {
                                     part.isFollowing = true;
                                 }
                                 
                                 return;
                             }
-                            else if (pikminRetrieved[i].x != part.x && pikminRetrieved[i].y != part.y && pikminRetrieved[i].isTrackingTarget == true)
+                            else if (pikminRetrieved[i].x != part.x && pikminRetrieved[i].y != part.y && pikminRetrieved[i].isTrackingTarget == true && pikminRetrieved[i].isClickedByPlayer == false)
                             {
                                 moveToObject(pikminRetrieved[i], part.x, part.y);
                             }
@@ -435,7 +445,7 @@ canvas.addEventListener('click', (e) =>
                             requestAnimationFrame(retrieveShipPartAnimation);
                         }
     
-                        function orbitObject()
+                        function orbitShipPart()
                         {
                             pikminObjects.forEach(pikmin => 
                             {
@@ -445,20 +455,25 @@ canvas.addEventListener('click', (e) =>
                                     pikmin.x = part.x + Math.cos(pikmin.angle) * pikmin.distance;
                                     pikmin.y = part.y + Math.cos(pikmin.angle) * pikmin.distance;
                                 }
+
                             })
-    
+
                             if (part.isErased)
                             {
-                                cancelAnimationFrame(orbitObject);
+                                cancelAnimationFrame(orbitShipPart);
     
                                 for (let i = 0; i < pikminRetrieved.length; i++)
                                 {
                                     pikminRetrieved[i].isTrackingTarget = false;
                                 }
+
+                                part.pikminAssigned = 0;
+
+                                levelCompleteModal.show();
                             }
-                            else if (!part.isErased)
+                            else if (!part.isErased && pikminRetrieved[i].isClickedByPlayer == false)
                             {
-                                requestAnimationFrame(orbitObject);
+                                requestAnimationFrame(orbitShipPart);
                             }
                         }
                     }
