@@ -1,5 +1,12 @@
+let mainMenu = document.querySelector('.main-menu');
+let playButton = document.querySelector('.main-menu button');
+let bgmAudio = document.getElementById('gameBGM');
+let mainMenuBGM = document.getElementById('mainMenuBGM');
 let canvas = document.getElementById('canvas');
 let levelCompleteModal = new bootstrap.Modal(document.getElementById('levelCompleteModal'));
+let howToPlayMenu = new bootstrap.Modal(document.getElementById('rulesPrompt'));
+let pikminContainer = document.querySelector(".pikmin-container");
+let howToPlayButton = document.querySelector(".howToPlayButton");
 let redPikminContainer = document.querySelector(".redPikmin");
 let pikminSpawnableContainer = document.querySelector(".pikminSpawnable");
 let ctx = canvas.getContext('2d');
@@ -13,7 +20,9 @@ let enemyObjects = [];
 let shipPartObjects = [];
 let objectRadius = 20; // Radius of the pikminObjects
 let minDistanceFromMouse = 50;
-let spawnLimit = 1;
+let spawnLimit = 20;
+
+let playerIsPlaying = false;
 
 let redPikminCount = 0;
 let minOffset = 50;
@@ -84,11 +93,6 @@ for (let i = 0; i < 9; i++)
         isBeingRetrieved: false
     };
     spawnTokenObjects.push(spawnTokenObj);
-}
-
-window.onload = function()
-{
-    pikminSpawnableContainer.innerHTML = `<h1>Pikmin Spawnable: ${spawnLimit}</h1>`;
 }
 
 // Listen for mouse move event to track the mouse position
@@ -289,7 +293,7 @@ canvas.addEventListener('click', (e) =>
         {
             console.log("Enemy Clicked!");
 
-            if (!enemy.isErased)
+            if (!enemy.isErased && pikminObjects.length >= enemy.enemyHealth)
             {
                 for (let i = 0; i < pikminRetrieved.length; i++)
                 {
@@ -309,28 +313,31 @@ canvas.addEventListener('click', (e) =>
                             }   
                         }
     
-                        pikminAttacking = temp;
-                        
+                        enemy.pikminAttacking = temp;
+
                         pikminRetrieved[i].isClickedByPlayer = false;
 
                         attackEnemyAnimation();
-    
+                        
                         function attackEnemyAnimation()
                         {
+
                             if (pikminRetrieved[i].x === enemy.x && pikminRetrieved[i].y === enemy.y)
                             {
                                 if (enemy.enemyHealth > 0)
                                 {
                                     orbitObject();
 
-                                    if (pikminAttacking >= enemy.enemyHealth)
+                                    console.log(enemy.pikminAttacking);
+
+                                    if (enemy.pikminAttacking >= enemy.enemyHealth)
                                     {
                 
                                         let healthLossInterval = setInterval(() =>
                                         {   
                                             enemy.enemyHealth--;
                 
-                                            if (enemy.enemyHealth == 0)
+                                            if (enemy.enemyHealth <= 0)
                                             {
                                                 clearInterval(healthLossInterval);
                                             }
@@ -349,6 +356,8 @@ canvas.addEventListener('click', (e) =>
                             }
                             else if (pikminRetrieved[i].x != enemy.x && pikminRetrieved[i].y != enemy.y && pikminRetrieved[i].isTrackingTarget == true && pikminRetrieved[i].isClickedByPlayer == false)
                             {
+                                console.log("moving to object");
+
                                 moveToObject(pikminRetrieved[i], enemy.x, enemy.y);
                             }
     
@@ -399,7 +408,7 @@ canvas.addEventListener('click', (e) =>
         {
             console.log("Ship Part Clicked!");
 
-            if (!part.isErased)
+            if (!part.isErased && pikminRetrieved.length >= part.pikminStrengthRequired)
             {
                 for (let i = 0; i < pikminRetrieved.length; i++)
                 {
@@ -483,7 +492,23 @@ canvas.addEventListener('click', (e) =>
     });
 });
 
+playButton.addEventListener('click', () =>
+{
+    playerIsPlaying = true;
+    canvas.style.display = 'block';
+    pikminContainer.style.display = 'block';
+    mainMenu.style.display = 'none';
 
+    mainMenuBGM.pause();
+    bgmAudio.play();
+
+    howToPlayMenu.show();
+});
+
+howToPlayButton.addEventListener('click', () =>
+{
+    howToPlayMenu.show();
+});
 
 function moveToObject(obj, targetX, targetY, speed = 0.5) 
 {
@@ -748,3 +773,12 @@ function getRandomOffset()
 {
     return Math.floor(Math.random() * (maxOffset - minOffset + 1)) + minOffset;
 }
+
+document.addEventListener('DOMContentLoaded', function () 
+{
+    canvas.style.display = 'none';
+    pikminContainer.style.display = 'none';
+    howToPlayMenu.hide();
+    bgmAudio.volume = 0.2;
+    mainMenuBGM.volume = 0.5;
+});

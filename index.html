@@ -17,26 +17,105 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                  <h3 class="modal-title">Level Complete!</h3>
+                    <h3 class="modal-title">Level Complete!</h3>
                 </div>
                 <div class="modal-body">
-                  <h4>Thank you for playing my game!</h4>
+                    <h4>Thank you for playing my game!</h4>
                 </div>
             </div>
         </div>
       </div>
     </div>
 
+    <div class="modal" id="rulesPrompt" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="rule-modal-content">
+                <div class="rule-modal-header">
+                    <h3 class="modal-title text-center">How to Play</h3>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>
+                            <h3>You crashland on a mysterious planet and must repair your ship. Repair your ship with the help of Pikmin!</h3> 
+                        </li>
+
+                        <li>
+                            <table>
+                                <tr>
+                                    <td><img src="./media/pikmin.png" alt=""></td>
+                                    <td>
+                                        These are Pikmin! They'll be your trusty helpers to help you get out of The Forest of Hope. 
+                                        Use them to gather tokens, fight enemies, and retrieve the ship part you need to escape the planet.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img src="./media/pikminSpawner.png" alt=""></td>
+                                    <td>
+                                        This is a Pikmin Spawner. Use it to create more Pikmin! Gather spawn tokens and defeat enemies so you can spawn more Pikmin.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img src="./media/spawnToken.png" alt=""></td>
+                                    <td>
+                                        This is a spawn token. Use Pikmin to retrieve these to increase how many Pikmin you can grow!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img class="img-fluid" src="./media/enemy.png" alt=""></td>
+                                    <td>
+                                        This is an enemy. You'll need to take care of them before you can retrieve the ship part. 
+                                        Retrieve defeated enemies and bring them back to the Pikmin Spawner!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img src="./media/shipPart.png" alt=""></td>
+                                    <td>This is a ship part. Retrieve this with Pikmin and return it to your ship to repair it!</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container pikmin-container">
         <div class="row">
             <div class="col-4 redPikmin"><h1>Red Pikmin: </h1></div>
-            <div class="col-2"></div>
+            <div class="col-2"><button class="howToPlayButton">How to Play</button></div>
             <div class="col-6 pikminSpawnable"></div>
         </div>
     </div>
 
+    <div class="container main-menu">
+        <div class="row">
+            <div class="col-12 text-center">
+                <img src="./media/PikminLogo.png" alt=""> <br />
+                <h2>Browser Edition!</h2> <br />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center">
+                <button>Play Game</button>
+
+                <audio id="gameBGM" loop>
+                    <source src="./media/Pikmin - The Forest of Hope.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container fixed-bottom mb-3 mr-3 ">
+        <div class="row">
+            <div class="col-12 text-right">
+                <audio id="mainMenuBGM" controls loop autoplay>
+                    <source src="./media/Pikmin - Title Screen.mp3">
+                </audio>
+            </div>
+        </div>
+    </div>
+
     <canvas id="canvas" width="600" height="400"></canvas>
-    <audio src="./media/Pikmin - The Forest of Hope.mp3" autoplay loop muted></audio>
 
 </body>
 <script type="text/javascript" src="app.js"></script>
