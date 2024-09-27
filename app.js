@@ -20,7 +20,7 @@ let enemyObjects = [];
 let shipPartObjects = [];
 let objectRadius = 20; // Radius of the pikminObjects
 let minDistanceFromMouse = 50;
-let spawnLimit = 20;
+let spawnLimit = 1;
 
 let playerIsPlaying = false;
 
