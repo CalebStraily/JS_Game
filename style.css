@@ -20,7 +20,7 @@ canvas
 
 .modal-content
 {
-    background-color: black !important;
+    background-color: rgba(0, 0, 0, 0.575) !important;
 }
 
 .modal-title
@@ -31,6 +31,11 @@ canvas
 .modal-body
 {
     color: rgb(255, 255, 255);
+}
+
+.modal-body p
+{
+    line-height: 40px;
 }
 
 .modal-footer
@@ -57,6 +62,7 @@ canvas
 .rule-modal-content td
 {
     padding-right: 20px;
+    padding-bottom: 20px;
 }
 
 .howToPlayButton

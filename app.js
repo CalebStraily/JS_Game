@@ -500,6 +500,7 @@ playButton.addEventListener('click', () =>
     mainMenu.style.display = 'none';
 
     mainMenuBGM.pause();
+    mainMenuBGM.style.display = 'none';
     bgmAudio.play();
 
     howToPlayMenu.show();
@@ -779,6 +780,8 @@ document.addEventListener('DOMContentLoaded', function ()
     canvas.style.display = 'none';
     pikminContainer.style.display = 'none';
     howToPlayMenu.hide();
-    bgmAudio.volume = 0.2;
-    mainMenuBGM.volume = 0.5;
+    bgmAudio.volume = 0.1;
+    mainMenuBGM.volume = 0.3;
+
+    bgmAudio.pause();
 });

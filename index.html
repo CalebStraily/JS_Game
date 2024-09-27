@@ -20,7 +20,13 @@
                     <h3 class="modal-title">Level Complete!</h3>
                 </div>
                 <div class="modal-body">
-                    <h4>Thank you for playing my game!</h4>
+                    <h4>
+                        <p>
+                            With the help of the Pikmin, you have repaired your ship and can continue your adventure throughout the stars! <br />
+                            The Pikmin said they wanna join you too! <br />
+                            Thank you for playing my game!
+                        </p>
+                    </h4>
                 </div>
             </div>
         </div>
@@ -34,46 +40,54 @@
                     <h3 class="modal-title text-center">How to Play</h3>
                 </div>
                 <div class="modal-body">
-                    <ul>
-                        <li>
-                            <h3>You crashland on a mysterious planet and must repair your ship. Repair your ship with the help of Pikmin!</h3> 
-                        </li>
-
-                        <li>
-                            <table>
-                                <tr>
-                                    <td><img src="./media/pikmin.png" alt=""></td>
-                                    <td>
-                                        These are Pikmin! They'll be your trusty helpers to help you get out of The Forest of Hope. 
-                                        Use them to gather tokens, fight enemies, and retrieve the ship part you need to escape the planet.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="./media/pikminSpawner.png" alt=""></td>
-                                    <td>
-                                        This is a Pikmin Spawner. Use it to create more Pikmin! Gather spawn tokens and defeat enemies so you can spawn more Pikmin.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="./media/spawnToken.png" alt=""></td>
-                                    <td>
-                                        This is a spawn token. Use Pikmin to retrieve these to increase how many Pikmin you can grow!
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img class="img-fluid" src="./media/enemy.png" alt=""></td>
-                                    <td>
-                                        This is an enemy. You'll need to take care of them before you can retrieve the ship part. 
-                                        Retrieve defeated enemies and bring them back to the Pikmin Spawner!
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="./media/shipPart.png" alt=""></td>
-                                    <td>This is a ship part. Retrieve this with Pikmin and return it to your ship to repair it!</td>
-                                </tr>
-                            </table>
-                        </li>
-                    </ul>
+                    <table>
+                        <thead>
+                            <tr>
+                                <h3>You crashland on a mysterious planet and must repair your ship. Repair your ship with the help of Pikmin!</h3>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="mb-3">
+                                <td>
+                                    Controls:
+                                </td>
+                                <td>
+                                    Left Click Pikmin To make them follow your mouse cursor. <br />
+                                    Left Click Enemies and Ship Parts to fight and retrieve them when you have enough Pikmin. <br />
+                                </td>
+                            </tr>
+                            <tr class="mb-3">
+                                <td><img src="./media/pikmin.png" alt=""></td>
+                                <td>
+                                    These are Pikmin! They'll be your trusty helpers to help you get out of The Forest of Hope. 
+                                    Use them to gather tokens, fight enemies, and retrieve the ship part you need to escape the planet.
+                                </td>
+                            </tr>
+                            <tr class="mb-3">
+                                <td><img src="./media/pikminSpawner.png" alt=""></td>
+                                <td>
+                                    This is a Pikmin Spawner. Use it to create more Pikmin! Gather spawn tokens and defeat enemies so you can spawn more Pikmin.
+                                </td>
+                            </tr>
+                            <tr class="mb-3">
+                                <td><img src="./media/spawnToken.png" alt=""></td>
+                                <td>
+                                    This is a spawn token. Use Pikmin to retrieve these to increase how many Pikmin you can grow!
+                                </td>
+                            </tr>
+                            <tr class="mb-3">
+                                <td><img class="img-fluid" src="./media/enemy.png" alt=""></td>
+                                <td>
+                                    This is an enemy. You'll need to take care of them before you can retrieve the ship part. 
+                                    Retrieve defeated enemies and bring them back to the Pikmin Spawner!
+                                </td>
+                            </tr>
+                            <tr class="mb-3">
+                                <td><img src="./media/shipPart.png" alt=""></td>
+                                <td>This is a ship part. Retrieve this with Pikmin and return it to your ship to repair it!</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -97,15 +111,24 @@
         <div class="row">
             <div class="col-12 text-center">
                 <button>Play Game</button>
-
-                <audio id="gameBGM" loop>
-                    <source src="./media/Pikmin - The Forest of Hope.mp3" type="audio/mpeg">
-                </audio>
+            </div>
+            <div class="col-12">
+                
             </div>
         </div>
     </div>
     
-    <div class="container fixed-bottom mb-3 mr-3 ">
+    <div class="container gameMusicPlayer fixed-bottom mb-3 mr-3">
+        <div class="row">
+            <div class="col-12 text-right">
+                <audio class="" id="gameBGM" controls loop autoplay>
+                    <source src="./media/Pikmin - The Forest of Hope.mp3">
+                </audio>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mainMenuMusicPlayer fixed-bottom mb-3 mr-3">
         <div class="row">
             <div class="col-12 text-right">
                 <audio id="mainMenuBGM" controls loop autoplay>
