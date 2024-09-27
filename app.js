@@ -293,7 +293,19 @@ canvas.addEventListener('click', (e) =>
         {
             console.log("Enemy Clicked!");
 
-            if (!enemy.isErased && pikminObjects.length >= enemy.enemyHealth)
+            let pikminFollowingPlayer = 0;
+
+            for (let i = 0; i < pikminRetrieved.length; i++)
+            {
+                if (pikminRetrieved[i].isFollowing == true)
+                {
+                    pikminFollowingPlayer++;
+                }
+            }
+
+            console.log(pikminFollowingPlayer);
+
+            if (!enemy.isErased && pikminFollowingPlayer >= enemy.enemyHealth)
             {
                 for (let i = 0; i < pikminRetrieved.length; i++)
                 {
@@ -408,7 +420,19 @@ canvas.addEventListener('click', (e) =>
         {
             console.log("Ship Part Clicked!");
 
-            if (!part.isErased && pikminRetrieved.length >= part.pikminStrengthRequired)
+            let pikminFollowingPlayer = 0;
+
+            for (let i = 0; i < pikminRetrieved.length; i++)
+            {
+                if (pikminRetrieved[i].isFollowing == true)
+                {
+                    pikminFollowingPlayer++;
+                }
+            }
+
+            console.log(pikminFollowingPlayer);
+
+            if (!part.isErased && pikminFollowingPlayer >= part.pikminStrengthRequired)
             {
                 for (let i = 0; i < pikminRetrieved.length; i++)
                 {
