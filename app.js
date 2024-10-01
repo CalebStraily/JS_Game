@@ -1,4 +1,5 @@
 let mainMenu = document.querySelector('.main-menu');
+let mainSection = document.querySelector('.main-section');
 let playButton = document.querySelector('.main-menu button');
 let bgmAudio = document.getElementById('gameBGM');
 let mainMenuBGM = document.getElementById('mainMenuBGM');
@@ -522,7 +523,8 @@ playButton.addEventListener('click', () =>
     canvas.style.display = 'block';
     pikminContainer.style.display = 'block';
     mainMenu.style.display = 'none';
-
+    mainSection.style.display = 'none';
+    
     mainMenuBGM.pause();
     mainMenuBGM.style.display = 'none';
     bgmAudio.play();
