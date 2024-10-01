@@ -11,6 +11,7 @@
         "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"> 
 	</script>
 </head>
+
 <body>
 
     <div class="modal fade" id="levelCompleteModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
@@ -30,7 +31,6 @@
                 </div>
             </div>
         </div>
-      </div>
     </div>
 
     <div class="modal" id="rulesPrompt" tabindex="-1" aria-hidden="true">
@@ -94,15 +94,16 @@
         </div>
     </div>
 
-    <div class="container pikmin-container">
-        <div class="row">
-            <div class="col-4 redPikmin"><h1>Red Pikmin: </h1></div>
-            <div class="col-2"><button class="howToPlayButton">How to Play</button></div>
-            <div class="col-6 pikminSpawnable"></div>
+    <div class="container-fluid pikmin-container">
+        <div class="row text-center">
+            <div class="col-4"><h1><span class="redPikmin red-text">Red Pikmin: </span></h1></div>
+            <div class="col-4"><button class="howToPlayButton">How to Play</button></div>
+            <div class="col-4 pikminSpawnable"></div>
         </div>
     </div>
 
     <main class="main-section">
+        
         <div class="container game-title">
             <div class="row">
                 <div class="col-12 text-center">

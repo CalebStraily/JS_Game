@@ -60,11 +60,7 @@ canvas
     border-radius: 10px;
     background-color: #91dd49;
     color: white ;
-}
-
-.redPikmin
-{
-    color: red;
+    margin-top: 15px;
 }
 
 .modal
@@ -143,9 +139,4 @@ canvas
 .gold-text
 {
     color: gold;
-}
-
-.howToPlayButton
-{
-    margin-top: 15px;
 }
