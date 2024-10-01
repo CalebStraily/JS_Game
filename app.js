@@ -233,7 +233,7 @@ canvas.addEventListener('click', (e) =>
             if (!tokenObj.isErased)
             {
                 //plays the token retrieve animation if not already running
-                if (!retrieveAnimationRunning)
+                if (!retrieveAnimationRunning && tokenObj.isBeingRetrieved == false)
                 {
                     for (let i = 0; i < pikminRetrieved.length; i++)
                     {
@@ -252,7 +252,7 @@ canvas.addEventListener('click', (e) =>
                     }
                 }
                 //plays the secondary token retrieve animation if it is not already running AND the first retrieve animation is currently running 
-                else if (retrieveAnimationRunning && !secondaryRetrieveAnimationRunning)
+                else if (retrieveAnimationRunning && !secondaryRetrieveAnimationRunning && tokenObj.isBeingRetrieved == false)
                 {
                     for (let i = 0; i < pikminRetrieved.length; i++)
                     {
@@ -915,8 +915,8 @@ function animate()
     updateObjectPositions();
     updateTokenPositions();
     updateEnemyPositions();
-    updateSpawnAvailable();
     updatePartPositions();
+    updateSpawnAvailable();
 
     //clears the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
