@@ -799,7 +799,7 @@ function updateTokenPositions()
     });
 }
 
-//updates the innerHTML of the pikmin spawnable container based on teh spawnLimit variable
+//updates the innerHTML of the pikmin spawnable container based on the spawnLimit variable
 function updateSpawnAvailable()
 {
     pikminSpawnableContainer.innerHTML = `<h1>Pikmin Spawnable: ${spawnLimit}</h1>`;
